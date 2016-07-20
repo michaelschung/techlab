@@ -367,7 +367,7 @@ So now, after all this, we can finally remove the `view.repaint()` line from our
 
 If you run the application at this point, it will work just like before. The difference is that this time, the screen is actually refreshing constantly, whether or not you are moving the circle. You can't see the difference since there are no obstacles yet, but we promise that this is the better way to do it. Trust us on this one.
 
-####**~CHECKPOINT~**
+####**~CHECKPOINT #1~**
 
 This is all of the code we have written so far (excluding the import statements at the top of each file, and `Player.java`, which is shown in full in the section “Create a Player object”). Please double check your code, paying close attention to indentation, capitalization, and syntax. If you have any errors, here is your chance to catch them!
 
@@ -488,7 +488,7 @@ public class EndlessRunController implements KeyListener {
 Once you are sure everything is correct, give yourself a good long break! We've thrown a lot of information at you, so go outside, get some fresh air, and relax your eyes from the computer screen. When you're ready, come back to continue!
 
 
-## PART II: CREATING OBSTACLES
+## PART II: CREATING AND MOVING OBSTACLES
 
 ####**Smoothing the movement**
 
@@ -657,14 +657,14 @@ public class Stump extends Obstacle {
 }
 ```
 
-Remember, the very first thing we need to do in our child constructor is call the parent constructor. We do this by calling the command `super();`. Next, we will initialize all of the variables (except `x` and `y`) to be specific to a Stump. Pay attention to the color declaration. The three numbers (in this case 51, 25, and 0) are the red, green, and blue (RGB) values of the color that we want. If you don't know how RGB values work, see [here](https://en.wikipedia.org/wiki/RGB_color_model).
+Remember, the very first thing we need to do in our child constructor is call the parent constructor. We do this by calling the command `super();`. Next, we will initialize all of the variables (except `x` and `y`) to be specific to a Stump. Pay attention to the color declaration. The three numbers (in this case 100, 50, and 0) are the red, green, and blue (RGB) values of the color that we want. If you don't know how RGB values work, see [here](https://en.wikipedia.org/wiki/RGB_color_model).
 
 ```java
 width = 60;
 height = 50;
 speed = 4;          // slow,
 damage = 10;        // but strong
-color = new Color(51, 25, 0);   // see Java documentation
+color = new Color(100, 50, 0);   // see Java documentation
 ```
 
 Finally, we will call the `init()` method in the parent class with the command `super.init();`. Your Stump constructor should look like this:
@@ -676,7 +676,7 @@ public Stump() {
     height = 50;
     speed = 4;          // slow,
     damage = 10;        // but strong
-    color = new Color(51, 25, 0);   // see Java documentation
+    color = new Color(100, 50, 0);   // see Java documentation
     super.init();
 }
 ```
@@ -689,11 +689,11 @@ Now, on your own, create the Fox and Alligator classes. Set their values as per 
 
 |       || Fox          | Alligator   |
 |:-------|:------------ |:------------|
-| width	 | 40           | 100         |
+| width  | 40           | 100         |
 | height | 30           | 40          |
 | speed  | 12           | 8           |
 | damage | 2            | 5           |
-| color	 | Color.orange | (40, 80, 0) |
+| color  | Color.orange | (40, 80, 0) |
 
 Wasn't that easy? This is the beauty of extendable classes.
 
@@ -769,8 +769,8 @@ In the constructor of your Model class, run a for loop to fill your ArrayList wi
 ```java
 // Add 5 Fox objects to the ArrayList
 for(int i = 0; i < 5; i++) {
-	Fox f = new Fox();
-	foxList.add(f);
+    Fox f = new Fox();
+    foxList.add(f);
 }
 ```
 
@@ -779,7 +779,7 @@ Next, go to the Controller class. Delete the line `model.fox.move();` in the Tim
 ```java
 // Use this to access the Fox objects from the view component
 public ArrayList<Fox> getFoxes() {
-	return model.foxList;
+    return model.foxList;
 }
 ```
 
@@ -788,9 +788,9 @@ In order for our Fox objects to move, we need to iterate through `foxList` and m
 ```java
 // Use this to move all of the Fox objects in model.foxList
 public void moveFoxes() {
-	for(Fox f : model.foxList) {
-		f.move();
-	}
+    for(Fox f : model.foxList) {
+        f.move();
+    }
 }
 ```
 
@@ -799,7 +799,7 @@ Then, add a call to `moveFoxes()` in the TimerTask `run()` method, right before 
 Finally, we need to draw our foxes. Go to the View component, and delete the code to draw a single Fox. Then, pull `foxList` from the Model using our Controller's `getFoxes()` method.
 
 ```java
-// Get the Fox objects to draw
+// Get the Fox objects in order to draw them
 ArrayList<Fox> foxes = controller.getFoxes();
 ```
 
@@ -807,8 +807,8 @@ Draw the Fox objects by iterating through the ArrayList and drawing each one ind
 
 ```java
 for(Fox f : foxes) {
-	g.setColor(f.color);
-	g.fillRect(f.x, f.y, f.width, f.height);
+    g.setColor(f.color);
+    g.fillRect(f.x, f.y, f.width, f.height);
 }
 ```
 
@@ -823,8 +823,8 @@ To do this, we need to make a quick change to `move()` method in our Obstacle cl
 ```java
 // Reset position if the obstacle goes offscreen
 if(x < -width) {
-	x = (int) (Math.random() * 1200) + 1200;
-	y = (int) (Math.random() * (600 - height - 22)) + 22;
+    x = (int) (Math.random() * 1200) + 1200;
+    y = (int) (Math.random() * (600 - height - 22)) + 22;
 }
 ```
 
@@ -833,4 +833,81 @@ Now, run your code again. The foxes will never stop coming.
 ![continuous foxes](https://github.com/michaelschung/techlab/blob/master/Java/EndlessRun/continuous_foxes.gif?raw=true)
 
 ####**More than just Foxes**
+
+Now that we have Foxes moving, let's expand our code to include not just Foxes, but Stumps and Alligators as well.
+
+Go back to the Model component, and change the declaration of the ArrayList to type `Obstacle`, and call it `obstacles`.
+
+```java
+// Create ArrayList to hold Obstacles
+ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+```
+
+Now, delete the initialization of `foxList` in the constructor. Instead, we will initialize `obstacles` to be filled with roughly equal numbers of Stumps, Alligators, and Foxes.
+
+Let's start with a total of ten Obstacles, so open a for loop that will run ten times. Inside the loop, declare a general Obstacle object, but don't initialize it yet. Also declare an `int` called `random` and initialize it to a random number between 0 and 3. This number will be used to determine which type of Obstacle to create.
+
+```java
+// Fill ArrayList with random types of Obstacles
+for(int i = 0; i < 10; i++) {
+    Obstacle newObstacle;
+    int random = (int) (Math.random() * 3);
+}
+```
+
+Next, write a series of conditionals that uses the value of `random` to determine which type of Obstacle `newObstacle` will be. Finally, after the conditionals, add `newObstacle` to `obstacles`.
+
+Notice that even though `obstacles` is an ArrayList of type Obstacle, we are allowed to add Stumps, Alligators, and Foxes. This is one of the properties of extendable classes: all children classes can be placed into an ArrayList of the parent type.
+
+```java
+if(random == 0) {
+    newObstacle = new Stump();
+} else if(random == 1) {
+    newObstacle = new Alligator();
+} else {
+    newObstacle = new Fox();
+}
+obstacles.add(newObstacle);
+```
+
+Now, go back to the Controller. You will notice that you have an error in the `moveFoxes()` and `getFoxes()` methods now. This is because our variable `foxList`, which they both refer to, no longer exists. Change the name and type of `getFoxes()`, and have it return `model.obstacles`.
+
+```java
+// Use this to access the Obstacles from the view component
+public ArrayList<Obstacle> getObstacles() {
+    return model.obstacles;
+}
+```
+
+Change the name of `moveFoxes()` to `moveObstacles()`, and edit its content to move every Obstacle in `model.obstacles`.
+
+```java
+// Use this to move all of the Obstacle objects in model.obstacles
+public void moveObstacles() {
+    for(Obstacle o : model.obstacles) {
+        o.move();
+    }
+}
+```
+
+Notice that we can refer to all of the objects in `obstacles` as Obstacle objects, because all of them -- Stump, Alligator, and Fox -- extend the Obstacle class. Also, as Obstacles they all share the same `move()` method, so they can all be moved in the exact same way.
+
+The last thing we need to do in the Controller is to change the `moveFoxes();` line in our TimerTask to call `moveObstacles()` instead.
+
+Finally, go back to the View component and edit the code to draw all Obstacles in `obstacles` instead of all Foxes in `foxList` (which doesn't even exist anymore).
+
+```java
+// Get the Obstacle objects in order to draw them
+ArrayList<Obstacle> obstacles = controller.getObstacles();
+for(Obstacle o : obstacles) {
+    g.setColor(o.color);
+    g.fillRect(o.x, o.y, o.width, o.height);
+}
+```
+
+If you run your code now, you should see something like this:
+
+![all obstacles](https://github.com/michaelschung/techlab/blob/master/Java/EndlessRun/all_obstacles.gif?raw=true)
+
+####**~CHECKPOINT #2~**
 
