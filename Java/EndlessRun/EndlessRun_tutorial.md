@@ -151,37 +151,7 @@ public class Player {
 }
 ```
 
-Next, the player needs a way to move. Let's declare four constants in our Player class, called `LEFT`, `RIGHT`, `UP`, and `DOWN`. Each of these should be an int, and they will determine which direction the player should move.
-
-```java
-// Constants to determine which direction to move
-public static final int LEFT = 1;
-public static final int RIGHT = 2;
-public static final int UP = 3;
-public static final int DOWN = 4;
-```
-
-Now we need to make a public method called `move(int direction)` method, which will be called from the controller when we want the player to move. The method takes in an integer parameter to determine the direction in which the controller has told it to move. We will compare this parameter to the four constants we created, and move the player accordingly.
-
-```java
-// Determine which direction to move
-public void move(int direction) {
-    if(direction == LEFT) {
-        x -= 5;
-    }
-    if(direction == RIGHT) {
-        x += 5;
-    }
-    if(direction == UP) {
-        y -= 5;
-    }
-    if(direction == DOWN) {
-        y += 5;
-    }
-}
-```
-
-Finally, we need to declare and initialize a Player object in `EndlessRunModel.java`, called `player`. Your model class should now look like this:
+Next, we need to declare and initialize a Player object in `EndlessRunModel.java`, called `player`. Your model class should now look like this:
 
 ```java
 public class EndlessRunModel {
@@ -267,7 +237,37 @@ Now, if you run the application, you should get a message in your console every 
 
 ####**Move the player**
 
-Of course, we don't actually want to use the “D” key. Instead of processing a “D” press, we need to process the arrow keys. This is as easy as changing `VK_D` to `VK_LEFT`, and replacing the print line with `model.player.move(Player.LEFT)`. Since `LEFT` is a static variable in the Player class, we can access it from the controller to pass as the direction in the `move()` method. The first one should look like this; try to do the other three arrow keys by yourself.
+Next, the player needs a way to move. Let's declare four constants in our Player class, called `LEFT`, `RIGHT`, `UP`, and `DOWN`. Each of these should be an int, and they will determine which direction the player should move.
+
+```java
+// Constants to determine which direction to move
+public static final int LEFT = 1;
+public static final int RIGHT = 2;
+public static final int UP = 3;
+public static final int DOWN = 4;
+```
+
+Now we need to make a public method called `move(int direction)` method, which will be called from the controller when we want the player to move. The method takes in an integer parameter to determine the direction in which the controller has told it to move. We will compare this parameter to the four constants we created, and move the player accordingly.
+
+```java
+// Determine which direction to move
+public void move(int direction) {
+    if(direction == LEFT) {
+        x -= 5;
+    }
+    if(direction == RIGHT) {
+        x += 5;
+    }
+    if(direction == UP) {
+        y -= 5;
+    }
+    if(direction == DOWN) {
+        y += 5;
+    }
+}
+```
+
+Now go back to the Controller. Currently, we just get a console notification every time we press the "D" key. Of course, we don't actually want to use the “D” key. Instead of processing a “D” press, we need to process the arrow keys. This is as easy as changing `VK_D` to `VK_LEFT`, and replacing the print line with `model.player.move(Player.LEFT)`. Since `LEFT` is a static variable in the Player class, we can access it from the controller to pass as the direction in the `move()` method. The first one should look like this; try to do the other three arrow keys by yourself.
 
 ```java
 public void keyPressed(KeyEvent e) {
@@ -304,6 +304,25 @@ public void keyPressed(KeyEvent e) {
 At this point, run the application and make sure you can move the circle.
 
 ![moving ball](https://github.com/michaelschung/techlab/blob/master/Java/EndlessRun/moving_ball.gif?raw=true)
+
+####**Setting boundaries**
+
+Before moving on, we need to make sure that the Player can't leave the boundaries of the screen. Edit the `move()` method, adding some conditional statements to take care of this.
+
+```java
+public void move(int direction) {
+    if(direction == LEFT) {
+        x -= 5;
+        if(x < 0) {
+            x = 0;
+        }
+    }
+    ...
+    // do the rest yourself
+}
+```
+
+*Note: in checking the top of the screen, use the value 22 instead of 0. We will explain later, but for now just know that it's a strange artifact of using JFrames.*
 
 ####**Refreshing with a Timer**
 
@@ -369,7 +388,9 @@ If you run the application at this point, it will work just like before. The dif
 
 ####**~CHECKPOINT #1~**
 
-This is all of the code we have written so far (excluding the import statements at the top of each file, and `Player.java`, which is shown in full in the section “Create a Player object”). Please double check your code, paying close attention to indentation, capitalization, and syntax. If you have any errors, here is your chance to catch them!
+This is all of the code we have written so far (excluding the import statements at the top of each file). Please double check your code, paying close attention to indentation, capitalization, and syntax. If you have any errors, here is your chance to catch them!
+
+#####EndlessRunModel.java
 
 ```java
 public class EndlessRunModel {
@@ -389,6 +410,8 @@ public class EndlessRunModel {
     }
 }
 ```
+
+#####EndlessRunView.java
 
 ```java
 public class EndlessRunView extends JFrame {
@@ -424,6 +447,8 @@ public class EndlessRunView extends JFrame {
     }
 }
 ```
+
+#####EndlessRunController.java
 
 ```java
 public class EndlessRunController implements KeyListener {
@@ -485,12 +510,62 @@ public class EndlessRunController implements KeyListener {
 }
 ```
 
+#####Player.java
+
+```java
+public class Player {
+    // Coordinates of the player
+    int x;
+    int y;
+    
+    // Constants to determine which direction to move
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
+    public static final int UP = 3;
+    public static final int DOWN = 4;
+    
+    public Player() {
+        // Start in the center (600 - radius, 300 - radius)
+        x = 580;
+        y = 280;
+    }
+    
+    // Determine which direction to move
+    public void move(int direction) {
+        if(direction == LEFT) {
+            x -= 5;
+            if(x < 0) {
+                x = 0;
+            }
+        }
+        if(direction == RIGHT) {
+            x += 5;
+            if(x > 1160) {
+                x = 1160;
+            }
+        }
+        if(direction == UP) {
+            y -= 5;
+            if(y < 22) {
+                y = 22;
+            }
+        }
+        if(direction == DOWN) {
+            y += 5;
+            if(y > 560) {
+                y = 560;
+            }
+        }
+    }
+}
+```
+
 Once you are sure everything is correct, give yourself a good long break! We've thrown a lot of information at you, so go outside, get some fresh air, and relax your eyes from the computer screen. When you're ready, come back to continue!
 
 
 ## PART II: CREATING AND MOVING OBSTACLES
 
-####**Smoothing the movement**
+####**Optimizing the movement**
 
 Okay, we lied a little bit. There is a small problem in the player movement that we still want to improve, so we are going to fix that before moving onto the obstacles. We just wanted to make sure that your brain didn't explode from all the information in the last section.
 
@@ -910,4 +985,260 @@ If you run your code now, you should see something like this:
 ![all obstacles](https://github.com/michaelschung/techlab/blob/master/Java/EndlessRun/all_obstacles.gif?raw=true)
 
 ####**~CHECKPOINT #2~**
+
+Congratulations, you have made it to the second checkpoint! Take a minute to check your code against ours, and then give yourself a break.
+
+#####EndlessRunModel.java
+
+```java
+public class EndlessRunModel {
+    // Create instance of the controller class
+    EndlessRunController controller;
+    
+    // Create a Player object
+    Player player;
+    
+    // Create ArrayList to hold Obstacles
+    ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+
+    public EndlessRunModel(EndlessRunController controller) {
+        // Initialize the controller variable to be the same as
+        // the one passed in from the controller itself
+        this.controller = controller;
+        
+        // Initialize the Player object
+        player = new Player();
+        
+        // Fill ArrayList with random types of Obstacles
+        for(int i = 0; i < 10; i++) {
+            Obstacle newObstacle;
+            int random = (int) (Math.random() * 3);
+            if(random == 0) {
+                newObstacle = new Stump();
+            } else if(random == 1) {
+                newObstacle = new Alligator();
+            } else {
+                newObstacle = new Fox();
+            }
+            obstacles.add(newObstacle);
+        }
+    }
+}
+```
+
+#####EndlessRunView.java
+
+```java
+public class EndlessRunView extends JFrame {
+    // Auto-generated by Eclipse to deal with serialization
+    // Yours may look slightly different
+    private static final long serialVersionUID = 1L;
+    
+    // Create instance of the controller class
+    EndlessRunController controller;
+
+    public EndlessRunView(EndlessRunController controller) {
+        // Initialize the controller variable to be the same as
+        // the one passed in from the controller itself
+        this.controller = controller;
+        
+        // Add a KeyListener to the controller
+        addKeyListener(controller);
+        
+        // Initialize the JFrame
+        setSize(1200, 600);
+        setVisible(true);
+    }
+    
+    public void paint(Graphics g) {
+        // Green background
+        g.setColor(Color.green);
+        g.fillRect(0, 0, 1200, 600);
+        
+        // Red circle for Player
+        Player p = controller.getPlayer();
+        g.setColor(Color.red);
+        g.fillOval(p.x, p.y, 40, 40);
+        
+        // Get the Obstacle objects in order to draw them
+        ArrayList<Obstacle> obstacles = controller.getObstacles();
+        for(Obstacle o : obstacles) {
+            g.setColor(o.color);
+            g.fillRect(o.x, o.y, o.width, o.height);
+        }
+    }
+}
+```
+
+#####EndlessRunController.java
+
+```java
+public class EndlessRunController implements KeyListener {
+    // Create instances of the model and view classes
+    EndlessRunModel model;
+    EndlessRunView view;
+    
+    // Booleans to check directions
+    boolean left, right, up, down;
+
+    // Start application by creating a new instance of the controller
+    public static void main(String[] args) {
+        new EndlessRunController();
+    }
+
+    public EndlessRunController() {
+        // Initialize the model and view objects
+        model = new EndlessRunModel(this);
+        view = new EndlessRunView(this);
+        
+        // Initially not moving anywhere
+        left = false;
+        right = false;
+        up = false;
+        down = false;
+        
+        // Create a Timer object
+        Timer t = new Timer();
+        // Create a TimerTask object
+        TimerTask myTask = new TimerTask() {
+            // This is the task to be done
+            public void run() {
+                movePlayer();
+                moveObstacles();
+                view.repaint();
+            }
+        };
+        // Schedule the TimerTask to be done every 50 ms, starting immediately
+        t.scheduleAtFixedRate(myTask, 0, 50);
+    }
+    
+    // Use this to move all of the Obstacle objects in model.obstacles
+    public void moveObstacles() {
+        for(Obstacle o : model.obstacles) {
+            o.move();
+        }
+    }
+    
+    // Use this to access the Player object from the view component
+    public Player getPlayer() {
+        return model.player;
+    }
+    
+    // Use this to access the Obstacles from the view component
+    public ArrayList<Obstacle> getObstacles() {
+        return model.obstacles;
+    }
+    
+    private void movePlayer() {
+        if(left) {
+            model.player.move(Player.LEFT);
+        }
+        if(right) {
+            model.player.move(Player.RIGHT);
+        }
+        if(up) {
+            model.player.move(Player.UP);
+        }
+        if(down) {
+            model.player.move(Player.DOWN);
+        }
+    }
+
+    public void keyTyped(KeyEvent e) {
+        // Not using this method, so just leave it empty
+    }
+    
+    public void keyPressed(KeyEvent e) {
+        // Process arrow key presses
+        if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+            left = true;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            right = true;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_UP) {
+            up = true;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            down = true;
+        }
+    }
+    
+    public void keyReleased(KeyEvent e) {
+        // Process arrow key presses
+        if(e.getKeyCode() == KeyEvent.VK_LEFT) {
+            left = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            right = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_UP) {
+            up = false;
+        }
+        if(e.getKeyCode() == KeyEvent.VK_DOWN) {
+            down = false;
+        }
+    }
+}
+```
+
+#####Obstacle.java
+
+```java
+public class Obstacle {
+    
+    // These are the variables that every obstacle will have
+    int x;
+    int y;
+    int width;
+    int height;
+    int speed;
+    int damage;     // amount of damage to inflict on player
+    Color color;
+    
+    // Parent constructor
+    public Obstacle() {
+        // Initialize x to be a random point off the right side of the screen
+        x = (int) (Math.random() * 1200) + 1200;
+    }
+    
+    // Some variables must be initialized after the child constructor runs
+    public void init() {
+        y = (int) (Math.random() * (600 - height - 22)) + 22;
+    }
+    
+    // Move the obstacle towards the left side of the screen
+    public void move() {
+        x -= speed;
+        
+        // Reset position if the obstacle goes offscreen
+        if(x < -width) {
+            x = (int) (Math.random() * 1200) + 1200;
+            y = (int) (Math.random() * (600 - height - 22)) + 22;
+        }
+    }
+}
+```
+
+#####Stump.java
+
+```java
+public class Stump extends Obstacle {
+    // Initialize Obstacle variables to be specific to Stump
+    public Stump() {
+        super();
+        width = 60;
+        height = 50;
+        speed = 4;          // slow,
+        damage = 10;        // but strong
+        color = new Color(100, 50, 0);  // see Java documentation
+        super.init();
+    }
+}
+```
+
+*Note: we did not include the code for `Alligator.java` or `Fox.java` in this checkpoint, because they are essentially exactly the same as `Stump.java`*
+
+
+## PART III: COLLISIONS
 
