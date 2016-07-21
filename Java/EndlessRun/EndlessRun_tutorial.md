@@ -386,7 +386,7 @@ So now, after all this, we can finally remove the `view.repaint()` line from our
 
 If you run the application at this point, it will work just like before. The difference is that this time, the screen is actually refreshing constantly, whether or not you are moving the circle. You can't see the difference since there are no obstacles yet, but we promise that this is the better way to do it. Trust us on this one.
 
-####**~CHECKPOINT #1~**
+###**~CHECKPOINT #1~**
 
 This is all of the code we have written so far (excluding the import statements at the top of each file). Please double check your code, paying close attention to indentation, capitalization, and syntax. If you have any errors, here is your chance to catch them!
 
@@ -984,7 +984,7 @@ If you run your code now, you should see something like this:
 
 ![all obstacles](https://github.com/michaelschung/techlab/blob/master/Java/EndlessRun/all_obstacles.gif?raw=true)
 
-####**~CHECKPOINT #2~**
+###**~CHECKPOINT #2~**
 
 Congratulations, you have made it to the second checkpoint! Take a minute to check your code against ours, and then give yourself a break.
 
